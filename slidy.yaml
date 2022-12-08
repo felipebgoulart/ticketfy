@@ -1,0 +1,48 @@
+slidy: '1'
+variables:
+  customMessage: "Complete"
+
+scripts:
+  doctor: flutter doctor
+
+  build: dart run build_runner build
+  mobx: flutter pub run build_runner watch --delete-conflicting-outputs
+
+  clean:
+    name: "Clean"
+    description: 'flutter cleanup cache'
+    run: flutter clean
+
+  # Steped command (slidy run reload)
+  cleanup:
+    description: "cleanup project"
+    steps:
+      - name: "Clean"
+        run: flutter clean
+        
+      - name: "GetPackages"
+        description: "Get packages"
+        run: flutter pub get
+
+      - name: "PodClean"
+        description: "Execute pod clean"
+        shell: zsh   # default: command. options (command|bash|sh|zsh|pwsh)
+        condition: "${System.operatingSystem} == macos"
+        working-directory: ios
+        run: |-
+          rm Podfile.lock
+          pod deintegrate
+          pod update
+          pod install
+  condition:
+    description: "test conditions"
+    steps:
+      - name: "Windows"
+        run: echo "I am in Windows"
+        condition: "'${System.operatingSystem}' == 'windows'"
+      - name: "Mac"
+        run: echo "I am in Mac"
+        condition: "${System.operatingSystem} == macos"
+      - name: "Linux"
+        run: echo "I am in Mac"
+        condition: "'${System.operatingSystem}' == 'linux'"
